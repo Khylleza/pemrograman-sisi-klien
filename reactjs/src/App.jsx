@@ -1,11 +1,7 @@
-// import DashboardLayout from "./admin/DashboardLayout";
-// import LoginLayout from "./LoginLayout";
+import AppRouter from "./routes/AppRouter";
 
-import DashboardMahasiswaPage from "./dashboard/DashboardMahasiswaPage";
-import LoginPage from "./LoginPage";
-
-function App() {
-  return <LoginPage />;
-}
+const App = () => {
+  return <AppRouter />;
+};
 
 export default App;
