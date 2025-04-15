@@ -1,10 +1,6 @@
 import { Link } from "react-router-dom";
 
-const MahasiswaTable = ({
-  data,
-  onEdit,
-  onDelete,
-}) => {
+const MahasiswaTable = ({ data, openEditModal, onDelete }) => {
   return (
     <table className="w-full mt-4 border border-gray-200">
       <thead>
@@ -33,7 +29,7 @@ const MahasiswaTable = ({
               </Link>
               <button
                 className="px-3 py-1 bg-yellow-400 text-white text-sm rounded hover:bg-yellow-500"
-                onClick={() => onEdit(mhs)}
+                onClick={() => openEditModal(mhs)}
               >
                 Edit
               </button>

@@ -1,58 +1,54 @@
-// /pages/admin/Mahasiswa.jsx
 import { useState } from "react";
 import MahasiswaTable from "../../components/organisms/MahasiswaTable";
-import ModalTambahMahasiswa from "../../components/organisms/ModalTambahMahasiswa";
+import MahasiswaModal from "../../components/organisms/MahasiswaModal";
 import Button from "../../components/atoms/Button";
 
 const Mahasiswa = () => {
   const [mahasiswa, setMahasiswa] = useState([
     { nim: "12345", nama: "Budi Santoso", status: true },
     { nim: "67890", nama: "Siti Aminah", status: true },
+    { nim: "23122", nama: "Rusdi Safara", status: false },
   ]);
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
+  const [selectedMahasiswa, setSelectedMahasiswa] = useState(null);
+  const [isModalOpen, setModalOpen] = useState(false);
 
-  const handleAddOrEdit = (data) => {
-    if (!data.nim || !data.nama) {
-      alert("NIM dan Nama harus diisi");
-      return;
-    }
-
-    const nimExists = mahasiswa.find((mhs) => mhs.nim === data.nim);
-
-    if (!editing && nimExists) {
-      alert("NIM sudah digunakan!");
-      return;
-    }
-
-    if (editing) {
-      const confirmUpdate = confirm("Yakin ingin memperbarui data?");
-      if (!confirmUpdate) return;
-
-      setMahasiswa((prev) =>
-        prev.map((mhs) =>
-          mhs.nim === editing.nim ? { ...data, status: true } : mhs
-        )
-      );
-    } else {
-      setMahasiswa((prev) => [...prev, { ...data, status: true }]);
-    }
-
-    setModalOpen(false);
-    setEditing(null);
+  const storeMahasiswa = (data) => {
+    setMahasiswa((prev) => [...prev, data]);
   };
 
-  const handleDelete = (nim) => {
-    const confirmDelete = confirm("Yakin ingin menghapus data?");
-    if (!confirmDelete) return;
+  const updateMahasiswa = (data) => {
+    setMahasiswa((prev) =>
+      prev.map((mhs) => (mhs.nim === data.nim ? data : mhs))
+    );
+  };
 
+  const deleteMahasiswa = (nim) => {
     setMahasiswa((prev) => prev.filter((mhs) => mhs.nim !== nim));
   };
 
-  const handleEdit = (mhs) => {
-    setEditing(mhs);
+  const openAddModal = () => {
+    setSelectedMahasiswa(null);
     setModalOpen(true);
+  };
+
+  const openEditModal = (mhs) => {
+    setSelectedMahasiswa(mhs);
+    setModalOpen(true);
+  };
+
+  const handleSubmit = (data) => {
+    if (selectedMahasiswa) {
+      updateMahasiswa(data);
+    } else {
+      storeMahasiswa(data);
+    }
+    setModalOpen(false);
+    setSelectedMahasiswa(null);
+  };
+
+  const handleDelete = (nim) => {
+    deleteMahasiswa(nim);
   };
 
   return (
@@ -62,33 +58,25 @@ const Mahasiswa = () => {
           <div className="flex justify-between mb-4">
             <p className="text-xl font-semibold">Daftar Mahasiswa</p>
             <div className="w-max">
-              <Button
-                onClick={() => {
-                  setEditing(null);
-                  setModalOpen(true);
-                }}
-              >
-                + Tambah Mahasiswa
-              </Button>
+              <Button onClick={openAddModal}>+ Tambah Mahasiswa</Button>
             </div>
           </div>
           <MahasiswaTable
             data={mahasiswa}
+            openEditModal={openEditModal}
             onDelete={handleDelete}
-            onEdit={handleEdit}
           />
         </div>
       </div>
 
-      <ModalTambahMahasiswa
-        isOpen={modalOpen}
+      <MahasiswaModal
+        isModalOpen={isModalOpen}
         onClose={() => {
           setModalOpen(false);
-          setEditing(null);
+          setSelectedMahasiswa(null);
         }}
-        onSubmit={handleAddOrEdit}
-        initialData={editing}
-        existingNims={mahasiswa.map((m) => m.nim)}
+        onSubmit={handleSubmit}
+        selectedMahasiswa={selectedMahasiswa}
       />
     </>
   );

@@ -1,31 +1,25 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Label from "../atoms/Label";
 import Input from "../atoms/Input";
 import Button from "../atoms/Button";
 
-const ModalTambahMahasiswa = ({
-  isOpen,
+const MahasiswaModal = ({
+  isModalOpen,
   onClose,
   onSubmit,
-  initialData,
-  existingNims,
+  selectedMahasiswa,
 }) => {
-  const [form, setForm] = useState({
-    nim: "",
-    nama: "",
-    status: true,
-  });
-
+  const [form, setForm] = useState({ nim: "", nama: "", status: true });
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (initialData) {
-      setForm(initialData);
+    if (selectedMahasiswa) {
+      setForm(selectedMahasiswa);
     } else {
       setForm({ nim: "", nama: "", status: true });
     }
     setError("");
-  }, [isOpen, initialData]);
+  }, [selectedMahasiswa, isModalOpen]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -37,34 +31,25 @@ const ModalTambahMahasiswa = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.nim || !form.nama) {
-      return setError("Semua field harus diisi.");
-    }
 
-    const isEdit = !!initialData;
-    const isNimTaken = existingNims.includes(form.nim);
-
-    if (!isEdit && isNimTaken) {
-      return setError("NIM sudah digunakan.");
-    }
-
-    if (isEdit && initialData?.nim !== form.nim && isNimTaken) {
-      return setError("NIM sudah digunakan.");
+    if (!form.nim.trim() || !form.nama.trim()) {
+      setError("NIM dan Nama wajib diisi.");
+      return;
     }
 
     setError("");
-    onSubmit(form, isEdit);
+    onSubmit(form);
     onClose();
   };
 
-  if (!isOpen) return null;
+  if (!isModalOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white w-full max-w-md rounded shadow-lg overflow-hidden">
         <div className="flex justify-between items-center p-4 border-b bg-blue-600 text-white">
           <h2 className="text-lg font-semibold">
-            {initialData ? "Edit Mahasiswa" : "Tambah Mahasiswa"}
+            {selectedMahasiswa ? "Edit Mahasiswa" : "Tambah Mahasiswa"}
           </h2>
           <button onClick={onClose} className="text-white text-xl">
             &times;
@@ -81,7 +66,7 @@ const ModalTambahMahasiswa = ({
               type="text"
               value={form.nim}
               onChange={handleChange}
-              disabled={!!initialData}
+              disabled={!!selectedMahasiswa}
               required
             />
           </div>
@@ -111,12 +96,14 @@ const ModalTambahMahasiswa = ({
             <Button
               type="button"
               onClick={onClose}
-              className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 cursor-pointer"
+              className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
             >
               Batal
             </Button>
             <div>
-              <Button type="submit">{initialData ? "Update" : "Simpan"}</Button>
+              <Button type="submit">
+                {selectedMahasiswa ? "Update" : "Simpan"}
+              </Button>
             </div>
           </div>
         </form>
@@ -125,4 +112,4 @@ const ModalTambahMahasiswa = ({
   );
 };
 
-export default ModalTambahMahasiswa;
+export default MahasiswaModal;
