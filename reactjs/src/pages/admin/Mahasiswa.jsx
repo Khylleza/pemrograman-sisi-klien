@@ -2,6 +2,9 @@ import { useState } from "react";
 import MahasiswaTable from "../../components/organisms/MahasiswaTable";
 import MahasiswaModal from "../../components/organisms/MahasiswaModal";
 import Button from "../../components/atoms/Button";
+import Swal from "sweetalert2";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Mahasiswa = () => {
   const [mahasiswa, setMahasiswa] = useState([
@@ -15,16 +18,19 @@ const Mahasiswa = () => {
 
   const storeMahasiswa = (data) => {
     setMahasiswa((prev) => [...prev, data]);
+    toast.success("Data mahasiswa berhasil ditambahkan.");
   };
 
   const updateMahasiswa = (data) => {
     setMahasiswa((prev) =>
       prev.map((mhs) => (mhs.nim === data.nim ? data : mhs))
     );
+    toast.success("Data mahasiswa berhasil diperbarui.");
   };
 
   const deleteMahasiswa = (nim) => {
     setMahasiswa((prev) => prev.filter((mhs) => mhs.nim !== nim));
+    toast.success("Data mahasiswa berhasil dihapus.");
   };
 
   const openAddModal = () => {
@@ -37,18 +43,50 @@ const Mahasiswa = () => {
     setModalOpen(true);
   };
 
-  const handleSubmit = (data) => {
-    if (selectedMahasiswa) {
-      updateMahasiswa(data);
-    } else {
-      storeMahasiswa(data);
+  const handleSubmit = async (data) => {
+    try {
+      if (selectedMahasiswa) {
+        const confirmUpdate = await Swal.fire({
+          title: "Konfirmasi Update",
+          text: "Yakin ingin menyimpan perubahan?",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonText: "Ya, Simpan",
+          cancelButtonText: "Batal",
+        });
+
+        if (confirmUpdate.isConfirmed) {
+          updateMahasiswa(data);
+        } else {
+          return;
+        }
+      } else {
+        storeMahasiswa(data);
+      }
+
+      setModalOpen(false);
+      setSelectedMahasiswa(null);
+    } catch (e) {
+      toast.error("Terjadi kesalahan saat menyimpan data.");
+      console.error(e);
     }
-    setModalOpen(false);
-    setSelectedMahasiswa(null);
   };
 
-  const handleDelete = (nim) => {
-    deleteMahasiswa(nim);
+  const handleDelete = async (nim) => {
+    const confirmDelete = await Swal.fire({
+      title: "Hapus Mahasiswa?",
+      text: "Tindakan ini tidak dapat dibatalkan!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Ya, Hapus",
+      cancelButtonText: "Batal",
+    });
+
+    if (confirmDelete.isConfirmed) {
+      deleteMahasiswa(nim);
+    }
   };
 
   return (
@@ -77,6 +115,12 @@ const Mahasiswa = () => {
         }}
         onSubmit={handleSubmit}
         selectedMahasiswa={selectedMahasiswa}
+      />
+
+      <ToastContainer
+        aria-label="toast notification"
+        position="top-center"
+        autoClose={2500}
       />
     </>
   );
