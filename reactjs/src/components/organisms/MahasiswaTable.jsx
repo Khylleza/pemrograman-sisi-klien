@@ -37,7 +37,7 @@ const MahasiswaTable = ({ data, openEditModal, onDelete }) => {
                 className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700"
                 onClick={() => {
                   const confirm = window.confirm("Yakin ingin menghapus?");
-                  if (confirm) onDelete(mhs.nim);
+                  if (confirm) onDelete(mhs);
                 }}
               >
                 Hapus

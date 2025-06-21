@@ -14,7 +14,12 @@ const MahasiswaModal = ({
 
   useEffect(() => {
     if (selectedMahasiswa) {
-      setForm(selectedMahasiswa);
+      setForm({
+        id: selectedMahasiswa.id,
+        nim: selectedMahasiswa.nim || "",
+        nama: selectedMahasiswa.nama || "",
+        status: selectedMahasiswa.status ?? true,
+      });
     } else {
       setForm({ nim: "", nama: "", status: true });
     }
@@ -39,7 +44,6 @@ const MahasiswaModal = ({
 
     setError("");
     onSubmit(form);
-    onClose();
   };
 
   if (!isModalOpen) return null;
@@ -51,10 +55,11 @@ const MahasiswaModal = ({
           <h2 className="text-lg font-semibold">
             {selectedMahasiswa ? "Edit Mahasiswa" : "Tambah Mahasiswa"}
           </h2>
-          <button onClick={onClose} className="text-white text-xl">
+          <button onClick={onClose} className="text-white text-xl font-bold">
             &times;
           </button>
         </div>
+
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           {error && <div className="text-red-600">{error}</div>}
 
@@ -70,6 +75,7 @@ const MahasiswaModal = ({
               required
             />
           </div>
+
           <div>
             <Label htmlFor="nama">Nama</Label>
             <Input
@@ -81,6 +87,7 @@ const MahasiswaModal = ({
               required
             />
           </div>
+
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -100,11 +107,9 @@ const MahasiswaModal = ({
             >
               Batal
             </Button>
-            <div>
-              <Button type="submit">
-                {selectedMahasiswa ? "Update" : "Simpan"}
-              </Button>
-            </div>
+            <Button type="submit">
+              {selectedMahasiswa ? "Update" : "Simpan"}
+            </Button>
           </div>
         </form>
       </div>

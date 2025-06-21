@@ -1,0 +1,22 @@
+{
+  "mahasiswa": [
+    {
+      "id": "2",
+      "nim": "67890",
+      "nama": "Siti",
+      "status": true
+    },
+    {
+      "id": "436c",
+      "nim": "www",
+      "nama": "www",
+      "status": true
+    },
+    {
+      "id": "7ee3",
+      "nim": "1wqwq",
+      "nama": "21qqw",
+      "status": true
+    }
+  ]
+}

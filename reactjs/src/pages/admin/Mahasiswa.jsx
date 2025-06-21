@@ -1,52 +1,64 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MahasiswaTable from "../../components/organisms/MahasiswaTable";
 import MahasiswaModal from "../../components/organisms/MahasiswaModal";
 import Button from "../../components/atoms/Button";
 import Swal from "sweetalert2";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import api from "../../api/axios";
 
 const Mahasiswa = () => {
-  const [mahasiswa, setMahasiswa] = useState([
-    { nim: "12345", nama: "Budi Santoso", status: true },
-    { nim: "67890", nama: "Siti Aminah", status: true },
-    { nim: "23122", nama: "Rusdi Safara", status: false },
-  ]);
-
+  const [mahasiswa, setMahasiswa] = useState([]);
   const [selectedMahasiswa, setSelectedMahasiswa] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
 
-  const storeMahasiswa = (data) => {
-    setMahasiswa((prev) => [...prev, data]);
-    toast.success("Data mahasiswa berhasil ditambahkan.");
+  // Ambil semua data
+  const fetchMahasiswa = async () => {
+    try {
+      const res = await api.get("/mahasiswa");
+      setMahasiswa(res.data);
+    } catch {
+      toast.error("Gagal mengambil data mahasiswa.");
+    }
   };
 
-  const updateMahasiswa = (data) => {
-    setMahasiswa((prev) =>
-      prev.map((mhs) => (mhs.nim === data.nim ? data : mhs))
-    );
-    toast.success("Data mahasiswa berhasil diperbarui.");
+  // Tambah data
+  const storeMahasiswa = async (data) => {
+    try {
+      await api.post("/mahasiswa", data);
+      toast.success("Data mahasiswa berhasil ditambahkan.");
+      fetchMahasiswa();
+    } catch {
+      toast.error("Gagal menambahkan data.");
+    }
   };
 
-  const deleteMahasiswa = (nim) => {
-    setMahasiswa((prev) => prev.filter((mhs) => mhs.nim !== nim));
-    toast.success("Data mahasiswa berhasil dihapus.");
+  // Perbarui data
+  const updateMahasiswa = async (data) => {
+    try {
+      await api.put(`/mahasiswa/${data.id}`, data);
+      toast.success("Data mahasiswa berhasil diperbarui.");
+      fetchMahasiswa();
+    } catch {
+      toast.error("Gagal memperbarui data.");
+    }
   };
 
-  const openAddModal = () => {
-    setSelectedMahasiswa(null);
-    setModalOpen(true);
-  };
-
-  const openEditModal = (mhs) => {
-    setSelectedMahasiswa(mhs);
-    setModalOpen(true);
+  // Hapus data
+  const deleteMahasiswa = async (id) => {
+    try {
+      await api.delete(`/mahasiswa/${id}`);
+      toast.success("Data mahasiswa berhasil dihapus.");
+      fetchMahasiswa();
+    } catch {
+      toast.error("Gagal menghapus data.");
+    }
   };
 
   const handleSubmit = async (data) => {
     try {
       if (selectedMahasiswa) {
-        const confirmUpdate = await Swal.fire({
+        const confirm = await Swal.fire({
           title: "Konfirmasi Update",
           text: "Yakin ingin menyimpan perubahan?",
           icon: "question",
@@ -54,25 +66,21 @@ const Mahasiswa = () => {
           confirmButtonText: "Ya, Simpan",
           cancelButtonText: "Batal",
         });
-
-        if (confirmUpdate.isConfirmed) {
-          updateMahasiswa(data);
-        } else {
-          return;
+        if (confirm.isConfirmed) {
+          await updateMahasiswa({ ...selectedMahasiswa, ...data });
         }
       } else {
-        storeMahasiswa(data);
+        await storeMahasiswa(data);
       }
 
       setModalOpen(false);
       setSelectedMahasiswa(null);
-    } catch (e) {
+    } catch {
       toast.error("Terjadi kesalahan saat menyimpan data.");
-      console.error(e);
     }
   };
 
-  const handleDelete = async (nim) => {
+  const handleDelete = async (id) => {
     const confirmDelete = await Swal.fire({
       title: "Hapus Mahasiswa?",
       text: "Tindakan ini tidak dapat dibatalkan!",
@@ -85,9 +93,23 @@ const Mahasiswa = () => {
     });
 
     if (confirmDelete.isConfirmed) {
-      deleteMahasiswa(nim);
+      await deleteMahasiswa(id);
     }
   };
+
+  const openAddModal = () => {
+    setSelectedMahasiswa(null);
+    setModalOpen(true);
+  };
+
+  const openEditModal = (mhs) => {
+    setSelectedMahasiswa(mhs);
+    setModalOpen(true);
+  };
+
+  useEffect(() => {
+    fetchMahasiswa();
+  }, []);
 
   return (
     <>
@@ -102,7 +124,7 @@ const Mahasiswa = () => {
           <MahasiswaTable
             data={mahasiswa}
             openEditModal={openEditModal}
-            onDelete={handleDelete}
+            onDelete={(mhs) => handleDelete(mhs.id)}
           />
         </div>
       </div>
@@ -117,11 +139,7 @@ const Mahasiswa = () => {
         selectedMahasiswa={selectedMahasiswa}
       />
 
-      <ToastContainer
-        aria-label="toast notification"
-        position="top-center"
-        autoClose={2500}
-      />
+      <ToastContainer position="top-center" autoClose={2500} />
     </>
   );
 };
