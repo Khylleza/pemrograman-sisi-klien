@@ -1,31 +1,49 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import users from "../data/users.json";
 import FormLoginGroup from "../components/molecules/FormLoginGroup";
 import Button from "../components/atoms/Button";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import api from "../api/axios"; // pastikan file ini mengatur baseURL json-server
 
 const Login = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const found = users.find(
-      (u) => u.email === form.email && u.password === form.password
-    );
+    try {
+      const res = await api.get(
+        `/users?email=${form.email}&password=${form.password}`
+      );
+      const user = res.data[0];
 
-    if (found) {
-      localStorage.setItem("user", JSON.stringify(found));
-      toast.success("Login berhasil! Mengarahkan ke dashboard...", {
-        position: "top-center",
-        autoClose: 2000,
-        onClose: () => navigate("/admin/dashboard"),
-      });
-    } else {
-      toast.error("Login gagal. Email atau password salah.", {
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("userId", user.id);
+        toast.success("Login berhasil! Mengarahkan ke dashboard...", {
+          position: "top-center",
+          autoClose: 2000,
+          onClose: () => {
+            if (user.role === "admin") {
+              navigate("/admin/dashboard");
+            } else if (user.role === "dosen") {
+              navigate("/dosen/dashboard");
+            } else {
+              navigate("/mahasiswa/dashboard");
+            }
+          },
+        });
+      } else {
+        toast.error("Email atau password salah.", {
+          position: "top-center",
+          autoClose: 3000,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Terjadi kesalahan saat login.", {
         position: "top-center",
         autoClose: 3000,
       });
@@ -77,7 +95,7 @@ const Login = () => {
 
           <p className="text-sm text-center text-neutral-700">
             <span>Belum punya akun? </span>
-            <a href="#">
+            <a href="/register">
               <span className="font-medium text-primary hover:underline text-blue-600">
                 Daftar
               </span>

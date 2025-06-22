@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
-const Sidebar = () => {
+const SidebarDosen = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -29,10 +29,10 @@ const Sidebar = () => {
   return (
     <aside className="w-64 h-screen bg-blue-600 text-white p-6 sticky top-0 flex flex-col justify-between">
       <div>
-        <h2 className="text-2xl font-bold mb-8">Admin</h2>
+        <h2 className="text-2xl font-bold mb-8">Dosen</h2>
         <nav className="flex flex-col gap-4">
           <NavLink
-            to="/admin/dashboard"
+            to="/dosen/dashboard"
             className={({ isActive }) =>
               isActive
                 ? "bg-blue-800 p-2 rounded"
@@ -40,36 +40,6 @@ const Sidebar = () => {
             }
           >
             🏠 Dashboard
-          </NavLink>
-          <NavLink
-            to="/admin/mahasiswa"
-            className={({ isActive }) =>
-              isActive
-                ? "bg-blue-800 p-2 rounded"
-                : "hover:bg-blue-700 p-2 rounded"
-            }
-          >
-            🎓 Mahasiswa
-          </NavLink>
-          <NavLink
-            to="/admin/dosen"
-            className={({ isActive }) =>
-              isActive
-                ? "bg-blue-800 p-2 rounded"
-                : "hover:bg-blue-700 p-2 rounded"
-            }
-          >
-            🎓 Dosen
-          </NavLink>
-          <NavLink
-            to="/admin/matakuliah"
-            className={({ isActive }) =>
-              isActive
-                ? "bg-blue-800 p-2 rounded"
-                : "hover:bg-blue-700 p-2 rounded"
-            }
-          >
-            🎓 Mata Kuliah
           </NavLink>
         </nav>
       </div>
@@ -83,4 +53,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default SidebarDosen;

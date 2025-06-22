@@ -1,22 +1,62 @@
 {
-  "mahasiswa": [
+  "users": [
     {
-      "id": "2",
-      "nim": "67890",
+      "id": 1,
+      "nama": "Admin",
+      "email": "admin@mail.com",
+      "password": "123456",
+      "role": "admin"
+    },
+    {
+      "id": 2,
       "nama": "Siti",
+      "email": "siti@mail.com",
+      "password": "123456",
+      "role": "mahasiswa",
+      "nim": "67890",
       "status": true
     },
     {
-      "id": "436c",
-      "nim": "www",
+      "id": 3,
       "nama": "www",
+      "email": "www@mail.com",
+      "password": "123456",
+      "role": "mahasiswa",
+      "nim": "www",
       "status": true
     },
     {
-      "id": "7ee3",
-      "nim": "1wqwq",
+      "id": 4,
       "nama": "21qqw",
+      "email": "21qqw@mail.com",
+      "password": "123456",
+      "role": "mahasiswa",
+      "nim": "1wqwq",
       "status": true
+    },
+    {
+      "id": 5,
+      "nama": "Dr. Siti Aminah",
+      "email": "dosen@mail.com",
+      "password": "123456",
+      "role": "dosen",
+      "nip": "198702132022011001",
+      "status": true
+    },
+    {
+      "id": "c454",
+      "name": "Testing",
+      "email": "test@gmail.com",
+      "password": "123456",
+      "role": "mahasiswa"
+    }
+  ],
+  "matakuliah": [
+    {
+      "id": 1,
+      "kode": "IF101",
+      "nama": "Algoritma & Pemrograman",
+      "sks": 3
     }
   ]
 }

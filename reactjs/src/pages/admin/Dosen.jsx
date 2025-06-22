@@ -1,71 +1,72 @@
 import { useEffect, useState } from "react";
-import MahasiswaTable from "../../components/organisms/MahasiswaTable";
-import MahasiswaModal from "../../components/organisms/MahasiswaModal";
+import DosenTable from "../../components/organisms/DosenTable";
+import DosenModal from "../../components/organisms/DosenModal";
 import Button from "../../components/atoms/Button";
 import Swal from "sweetalert2";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import api from "../../api/axios";
 
-const Mahasiswa = () => {
-  const [mahasiswa, setMahasiswa] = useState([]);
-  const [selectedMahasiswa, setSelectedMahasiswa] = useState(null);
+const Dosen = () => {
+  const [dosen, setDosen] = useState([]);
+  const [selectedDosen, setSelectedDosen] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
 
-  // Ambil semua data mahasiswa
-  const fetchMahasiswa = async () => {
+  // Ambil semua data dosen
+  const fetchDosen = async () => {
     try {
-      const res = await api.get("/users?role=mahasiswa");
-      setMahasiswa(res.data);
+      const res = await api.get("/users?role=dosen");
+      setDosen(res.data);
     } catch {
-      toast.error("Gagal mengambil data mahasiswa.");
+      toast.error("Gagal mengambil data dosen.");
     }
   };
 
-  // Tambah data
-  const storeMahasiswa = async (data) => {
+  // Tambah dosen
+  const storeDosen = async (data) => {
     try {
       const newData = {
         ...data,
-        role: "mahasiswa",
+        role: "dosen",
         password: "123456",
       };
       await api.post("/users", newData);
-      toast.success("Data mahasiswa berhasil ditambahkan.");
-      fetchMahasiswa();
+      toast.success("Data dosen berhasil ditambahkan.");
+      fetchDosen();
     } catch {
       toast.error("Gagal menambahkan data.");
     }
   };
 
-  // Perbarui data
-  const updateMahasiswa = async (data) => {
+  // Update dosen
+  const updateDosen = async (data) => {
     try {
       await api.put(`/users/${data.id}`, {
         ...data,
-        role: "mahasiswa",
+        role: "dosen",
       });
-      toast.success("Data mahasiswa berhasil diperbarui.");
-      fetchMahasiswa();
+      toast.success("Data dosen berhasil diperbarui.");
+      fetchDosen();
     } catch {
       toast.error("Gagal memperbarui data.");
     }
   };
 
-  // Hapus data
-  const deleteMahasiswa = async (id) => {
+  // Hapus dosen
+  const deleteDosen = async (id) => {
     try {
       await api.delete(`/users/${id}`);
-      toast.success("Data mahasiswa berhasil dihapus.");
-      fetchMahasiswa();
+      toast.success("Data dosen berhasil dihapus.");
+      fetchDosen();
     } catch {
       toast.error("Gagal menghapus data.");
     }
   };
 
+  // Handler submit form modal
   const handleSubmit = async (data) => {
     try {
-      if (selectedMahasiswa) {
+      if (selectedDosen) {
         const confirm = await Swal.fire({
           title: "Konfirmasi Update",
           text: "Yakin ingin menyimpan perubahan?",
@@ -74,24 +75,24 @@ const Mahasiswa = () => {
           confirmButtonText: "Ya, Simpan",
           cancelButtonText: "Batal",
         });
-
         if (confirm.isConfirmed) {
-          await updateMahasiswa({ ...selectedMahasiswa, ...data });
+          await updateDosen({ ...selectedDosen, ...data });
         }
       } else {
-        await storeMahasiswa(data);
+        await storeDosen(data);
       }
 
       setModalOpen(false);
-      setSelectedMahasiswa(null);
+      setSelectedDosen(null);
     } catch {
       toast.error("Terjadi kesalahan saat menyimpan data.");
     }
   };
 
+  // Handler hapus data
   const handleDelete = async (id) => {
     const confirmDelete = await Swal.fire({
-      title: "Hapus Mahasiswa?",
+      title: "Hapus Dosen?",
       text: "Tindakan ini tidak dapat dibatalkan!",
       icon: "warning",
       showCancelButton: true,
@@ -102,22 +103,24 @@ const Mahasiswa = () => {
     });
 
     if (confirmDelete.isConfirmed) {
-      await deleteMahasiswa(id);
+      await deleteDosen(id);
     }
   };
 
+  // Open modal tambah
   const openAddModal = () => {
-    setSelectedMahasiswa(null);
+    setSelectedDosen(null);
     setModalOpen(true);
   };
 
-  const openEditModal = (mhs) => {
-    setSelectedMahasiswa(mhs);
+  // Open modal edit
+  const openEditModal = (dosen) => {
+    setSelectedDosen(dosen);
     setModalOpen(true);
   };
 
   useEffect(() => {
-    fetchMahasiswa();
+    fetchDosen();
   }, []);
 
   return (
@@ -125,27 +128,27 @@ const Mahasiswa = () => {
       <div className="p-10 bg-slate-100 min-h-screen">
         <div className="bg-white p-4 rounded-lg">
           <div className="flex justify-between mb-4">
-            <p className="text-xl font-semibold">Daftar Mahasiswa</p>
+            <p className="text-xl font-semibold">Daftar Dosen</p>
             <div className="w-max">
-              <Button onClick={openAddModal}>+ Tambah Mahasiswa</Button>
+              <Button onClick={openAddModal}>+ Tambah Dosen</Button>
             </div>
           </div>
-          <MahasiswaTable
-            data={mahasiswa}
+          <DosenTable
+            data={dosen}
             openEditModal={openEditModal}
-            onDelete={(mhs) => handleDelete(mhs.id)}
+            onDelete={(d) => handleDelete(d.id)}
           />
         </div>
       </div>
 
-      <MahasiswaModal
+      <DosenModal
         isModalOpen={isModalOpen}
         onClose={() => {
           setModalOpen(false);
-          setSelectedMahasiswa(null);
+          setSelectedDosen(null);
         }}
         onSubmit={handleSubmit}
-        selectedMahasiswa={selectedMahasiswa}
+        selectedDosen={selectedDosen}
       />
 
       <ToastContainer position="top-center" autoClose={2500} />
@@ -153,4 +156,4 @@ const Mahasiswa = () => {
   );
 };
 
-export default Mahasiswa;
+export default Dosen;
